@@ -27,7 +27,7 @@ jobs:
       - name: Build Docker Image
         run: |
           cd naming-server
-          docker build -t mastermind007/job-portal-naming-server:latest
+          docker build -t mastermind007/job_portal:latest
 
       #        - name: Log in to Docker Hub
       #          run: |
