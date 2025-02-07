@@ -33,8 +33,5 @@ jobs:
       - name: Build Docker Image
         run: |
           cd naming-server
-          docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-naming-server:latest --push .
-
-      - name: Push Docker Image to Docker Hub
-        run: |
-          docker push mastermind007/job_portal-naming-server:latest
+          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+          docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-naming-server:latest-${IMAGE_TAG} --push .
