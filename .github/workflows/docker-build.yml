@@ -35,5 +35,6 @@ jobs:
           cd naming-server
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-naming-server:latest --push .
 
-      - name: Push Docker Image
-        run: docker push mastermind007/job_portal-naming-server
+      - name: Push Docker Image to Docker Hub
+        run: |
+          docker push mastermind007/job_portal-naming-server:latest
