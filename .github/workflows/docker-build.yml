@@ -24,10 +24,13 @@ jobs:
           cd naming-server
           mvn clean package -DskipTests
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Build Docker Image
         run: |
           cd naming-server
-          docker build -t mastermind007/job_portal:latest
+          docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-naming-server:latest --push .
 
       #        - name: Log in to Docker Hub
       #          run: |
