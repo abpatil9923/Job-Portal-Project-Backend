@@ -1,12 +1,14 @@
-package com.jobportal.user_service;
+package com.jobportal.api_gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+
 @SpringBootApplication
-public class UserServiceApplication {
+public class ApiGatewayApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(UserServiceApplication.class, args);
+		SpringApplication.run(ApiGatewayApplication.class, args);
 	}
+
 }
