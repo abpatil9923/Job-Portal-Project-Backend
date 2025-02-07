@@ -24,6 +24,9 @@ jobs:
           cd naming-server
           mvn clean package -DskipTests
 
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
@@ -31,10 +34,6 @@ jobs:
         run: |
           cd naming-server
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-naming-server:latest --push .
-
-      #        - name: Log in to Docker Hub
-      #          run: |
-      #            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Push Docker Image
         run: docker push mastermind007/job_portal/naming-server
