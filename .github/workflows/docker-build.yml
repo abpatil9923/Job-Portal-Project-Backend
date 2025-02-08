@@ -21,7 +21,15 @@ jobs:
 
       - name: Build Naming Server
         run: |
+          cd config-server
+          mvn clean package -DskipTests
           cd naming-server
+          mvn clean package -DskipTests
+          cd user-service
+          mvn clean package -DskipTests
+          cd api-gateway
+          mvn clean package -DskipTests
+          cd authentication-service
           mvn clean package -DskipTests
 
       - name: Log in to Docker Hub
@@ -34,32 +42,32 @@ jobs:
       - name: build docker image of config-server
         run: |
           cd config-server
-          IMAGE_TAG=$(date +%Y%m%d)
+          IMAGE_TAG=$(date +%Y%m%d%H%M)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-config-server:latest-${IMAGE_TAG} --push .
 
       - name: build docker image of naming-server
         run: |
           cd naming-server
-          IMAGE_TAG=$(date +%Y%m%d)
+          IMAGE_TAG=$(date +%Y%m%d%H%M)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-naming-server:latest-${IMAGE_TAG} --push .
           
           
       - name: build docker image of user-service
         run: |
           cd user-service
-          IMAGE_TAG=$(date +%Y%m%d)
+          IMAGE_TAG=$(date +%Y%m%d%H%M)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-user-service:latest-${IMAGE_TAG} --push .
 
 
       - name: build docker image of api-gateway
         run: |
           cd api-gateway
-          IMAGE_TAG=$(date +%Y%m%d)
+          IMAGE_TAG=$(date +%Y%m%d%H%M)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-api-gateway:latest-${IMAGE_TAG} --push .
 
 
       - name: build docker image of authentication-service
         run: |
           cd authentication-service
-          IMAGE_TAG=$(date +%Y%m%d)
+          IMAGE_TAG=$(date +%Y%m%d%H%M)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-authentication-service:latest-${IMAGE_TAG} --push .
