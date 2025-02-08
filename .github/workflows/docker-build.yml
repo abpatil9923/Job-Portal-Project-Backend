@@ -1,5 +1,6 @@
-name: Build and Push Docker Image of naming server
+name: Build and Push Docker Images
 
+# setup the branch
 on:
   push:
     branches:
@@ -9,16 +10,65 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
 
+# check out to repository
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
+# set JDK version
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           distribution: "temurin"
           java-version: "17"
 
+# check code changes happened or not 
+      - name: Check for changes in config-server
+        id: config-server
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^config-server/'; then
+            echo "BUILD__CONFIG_SERVER=true" >> $GITHUB_ENV
+          else
+            echo "BUILD__CONFIG_SERVER=false" >> $GITHUB_ENV
+          fi  
+          
+      - name: Check for changes in naming-server
+        id: naming-server
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^naming-server/'; then
+            echo "BUILD_NAMING_SERVER=true" >> $GITHUB_ENV
+          else
+            echo "BUILD_NAMING_SERVER=false" >> $GITHUB_ENV
+          fi   
+
+      - name: Check for changes in user-service
+        id: user-service
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^user-service/'; then
+            echo "BUILD_USER_SERVICE=true" >> $GITHUB_ENV
+          else
+            echo "BUILD_USER_SERVICE=false" >> $GITHUB_ENV
+          fi   
+
+      - name: Check for changes in api-gateway
+        id: api-gateway
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^api-gateway/'; then
+            echo "BUILD_API_GATEWAY=true" >> $GITHUB_ENV
+          else
+            echo "BUILD_API_GATEWAY=false" >> $GITHUB_ENV
+          fi   
+
+      - name: Check for changes in authentication-service
+        id: authentication-service
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q '^authentication-service/'; then
+            echo "BUILD_AUTHENTICATION_SERVICE=true" >> $GITHUB_ENV
+          else
+            echo "BUILD_AUTHENTICATION_SERVICE=false" >> $GITHUB_ENV
+          fi   
+
+# build the projects          
       - name: Build Services
         run: |
           cd config-server && mvn clean package -DskipTests && cd ..
@@ -27,21 +77,24 @@ jobs:
           cd api-gateway && mvn clean package -DskipTests && cd ..
           cd authentication-service && mvn clean package -DskipTests && cd ..
 
-
+# login to docker
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
+# setup docker buildx        
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-
+# build and push docker images
       - name: build docker image of config-server
+        if: env.BUILD__CONFIG_SERVER == 'true'
         run: |
           cd config-server
           IMAGE_TAG=$(date +%Y%m%d%H%M)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-config-server:latest-${IMAGE_TAG} --push . && cd ..
 
       - name: build docker image of naming-server
+        if: env.BUILD_NAMING_SERVER == 'true'
         run: |
           cd naming-server
           IMAGE_TAG=$(date +%Y%m%d%H%M)
@@ -49,6 +102,7 @@ jobs:
           
           
       - name: build docker image of user-service
+        if: env.BUILD_USER_SERVICE == 'true'
         run: |
           cd user-service
           IMAGE_TAG=$(date +%Y%m%d%H%M)
@@ -56,6 +110,7 @@ jobs:
 
 
       - name: build docker image of api-gateway
+        if: env.BUILD_API_GATEWAY == 'true'
         run: |
           cd api-gateway
           IMAGE_TAG=$(date +%Y%m%d%H%M)
@@ -63,6 +118,7 @@ jobs:
 
 
       - name: build docker image of authentication-service
+        if: env.BUILD_AUTHENTICATION_SERVICE == 'true'
         run: |
           cd authentication-service
           IMAGE_TAG=$(date +%Y%m%d%H%M)
