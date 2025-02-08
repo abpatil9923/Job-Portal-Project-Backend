@@ -5,7 +5,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the built JAR file into the container
-# COPY target/naming-server-0.0.1-SNAPSHOT.jar app.jar
+COPY target/naming-server-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose the application port
 EXPOSE 8761
