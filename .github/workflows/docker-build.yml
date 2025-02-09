@@ -92,14 +92,14 @@ jobs:
         if: env.BUILD__CONFIG_SERVER == 'true'
         run: |
           cd config-server
-          IMAGE_TAG=$(date +%Y%m%d%H%M)
+          IMAGE_TAG=$(date +%Y%m)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-config-server:latest-${IMAGE_TAG} --push . && cd ..
 
       - name: build docker image of naming-server
         if: env.BUILD_NAMING_SERVER == 'true'
         run: |
           cd naming-server
-          IMAGE_TAG=$(date +%Y%m%d%H%M)
+          IMAGE_TAG=$(date +%Y%m)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-naming-server:latest-${IMAGE_TAG} --push . && cd ..
           
           
@@ -107,7 +107,7 @@ jobs:
         if: env.BUILD_USER_SERVICE == 'true'
         run: |
           cd user-service
-          IMAGE_TAG=$(date +%Y%m%d%H%M)
+          IMAGE_TAG=$(date +%Y%m)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-user-service:latest-${IMAGE_TAG} --push . && cd ..
 
 
@@ -115,7 +115,7 @@ jobs:
         if: env.BUILD_API_GATEWAY == 'true'
         run: |
           cd api-gateway
-          IMAGE_TAG=$(date +%Y%m%d%H%M)
+          IMAGE_TAG=$(date +%Y%m)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-api-gateway:latest-${IMAGE_TAG} --push . && cd ..
 
 
@@ -123,5 +123,5 @@ jobs:
         if: env.BUILD_AUTHENTICATION_SERVICE == 'true'
         run: |
           cd authentication-service
-          IMAGE_TAG=$(date +%Y%m%d%H%M)
+          IMAGE_TAG=$(date +%Y%m)
           docker buildx build --platform linux/amd64,linux/arm64 -t mastermind007/job_portal-authentication-service:latest-${IMAGE_TAG} --push . && cd ..
