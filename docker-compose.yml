@@ -2,9 +2,19 @@ version: '3.8'
 
 services:
 
-# Config Server Service
+# # Naming Server Service (Eureka)
+  # naming-server:
+  #   image: mastermind007/job_portal-naming-server:latest
+  #   container_name: naming-server
+  #   ports:
+  #     - "8761:8761"
+  #   networks:
+  #     - jobportal-network
+
+
+  # Config Server Service
   config-server:
-    image: mastermind007/job_portal-config-server:latest-202502081830
+    image: mastermind007/job_portal-config-server:latest
     container_name: config-server
     environment:
       - SPRING_PROFILES_ACTIVE=dev
@@ -12,82 +22,56 @@ services:
       - "8888:8888"
     networks:
       - jobportal-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
 
-# Naming Server Service (Eureka)
-  naming-server:
-    image: mastermind007/job_portal-naming-server:latest-20250208
-    container_name: naming-server
-    ports:
-      - "8761:8761"
-    networks:
-      - jobportal-network
-    depends_on:
-      config-server:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-
-# User Service
+  # User Service
   user-service:
-    image: mastermind007/job_portal-user-service:latest-202502081733
+    image: mastermind007/job_portal-user-service:latest
     container_name: user-service
     networks:
       - jobportal-network
     depends_on:
-      config-server:
-        condition: service_healthy
-      naming-server:
-        condition: service_healthy
+      - config-server
+
     environment:
       - SPRING_APPLICATION_NAME=user-service
       - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_CONFIG_IMPORT=configserver:,http://config-server:8888
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka
+      - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
+      # - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka
     ports:
       - "8100:8100"
 
-# API Gateway Service
-  api-gateway:
-    image: mastermind007/job_portal-api-gateway:latest-202502081733
-    container_name: api-gateway
-    networks:
-      - jobportal-network
-    depends_on:
-      naming-server:
-        condition: service_healthy
-    environment:
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka
-    ports:
-      - "8765:8765"
 
-# Authentication Service
-  authentication-service:
-    image: mastermind007/job_portal-authentication-service:latest-202502081733
-    container_name: authentication-service
-    networks:
-      - jobportal-network
-    depends_on:
-      config-server:
-        condition: service_healthy
-      naming-server:
-        condition: service_healthy
-    environment:
-      - SPRING_APPLICATION_NAME=authentication-service
-      - SPRING_PROFILES_ACTIVE=dev
-      - SPRING_CONFIG_IMPORT=configserver:,http://config-server:8888
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka
-    ports:
-      - "9100:9100"
+  # API Gateway Service
+  # api-gateway:
+  #   image: mastermind007/job_portal-api-gateway:latest
+  #   container_name: api-gateway
+  #   networks:
+  #     - jobportal-network
+  #   depends_on:
+  #     - naming-server
+  #   environment:
+  #     - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka
+  #   ports:
+  #     - "8765:8765"
+
+  # # Authentication Service
+  # authentication-service:
+  #   image: mastermind007/job_portal-authentication-service:latest
+  #   container_name: authentication-service
+  #   networks:
+  #     - jobportal-network
+  #   depends_on:
+  #     config-server:
+  #       condition: service_healthy
+  #     naming-server:
+  #       condition: service_healthy  
+  #   environment:
+  #     - SPRING_APPLICATION_NAME=authentication-service
+  #     - SPRING_PROFILES_ACTIVE=dev
+  #     - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
+  #     - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka
+  #   ports:
+  #     - "9100:9100"
 
 networks:
   jobportal-network:
