@@ -20,6 +20,8 @@ services:
     depends_on:
       - naming-server
     environment:
+      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka
     ports:
       - "8100:8100"
@@ -47,6 +49,8 @@ services:
     depends_on:
       - naming-server  
     environment:
+      - SPRING_CLOUD_CONFIG_ENABLED=false
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://naming-server:8761/eureka
     ports:
       - "9100:9100"
