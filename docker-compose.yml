@@ -1,18 +1,15 @@
 version: '3.8'
 
 services:
-
   config-server:
     image: mastermind007/job_portal-config-server:latest
     container_name: config-server
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
     ports:
       - "8888:8888"
     networks:
       - jobportal-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://config-server:8888/actuator/health"]
       interval: 10s
       retries: 5
       start_period: 20s  
@@ -26,9 +23,7 @@ services:
     depends_on:
       config-server:
         condition: service_healthy
-    environment:
-      - SPRING_APPLICATION_NAME= user-service
-      - SPRING_PROFILES_ACTIVE= dev
+    environment:       
       - SPRING_CONFIG_IMPORT=configserver:http://config-server:8888
     ports:
       - "8100:8100"
